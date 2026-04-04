@@ -1,6 +1,7 @@
 using Scalar.AspNetCore;
 using Recam.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Recam.API.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<RecamDbContext>(Options =>
 Options.UseSqlServer(builder.Configuration.GetConnectionString("RecamDb")));
+
+builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
 
 var app = builder.Build();
 
