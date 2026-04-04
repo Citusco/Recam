@@ -18,5 +18,15 @@ public class RecamDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<AgentListingCase>().HasKey(p => new {p.AgentId, p.ListingCaseId});
+        modelBuilder.Entity<CaseContact>().HasKey(p => p.ContactId);
+        // Prevent cycles or multiple cascade delete.
+        modelBuilder.Entity<MediaAsset>()
+        .HasOne(p => p.User)
+        .WithMany(p => p.MediaAssets)
+        .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<MediaAsset>()
+        .HasOne(p => p.ListingCase)
+        .WithMany(p => p.MediaAssets)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 }

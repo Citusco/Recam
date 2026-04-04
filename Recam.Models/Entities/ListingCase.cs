@@ -27,4 +27,6 @@ public class ListingCase
     public User User { get; set; }
 
     public ICollection<AgentListingCase> AgentListingCases { get; set; }
+    public ICollection<CaseContact> CaseContacts { get; set; }
+    public ICollection<MediaAsset> MediaAssets { get; set; }
 }
