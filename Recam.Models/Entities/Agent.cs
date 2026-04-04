@@ -13,4 +13,5 @@ public class Agent
 
     // An agent is an user.
     public User User { get; set; }
+    public ICollection<AgentListingCase> AgentListingCases { get; set; }
 }
