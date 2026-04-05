@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recam.DataAccess;
 
@@ -11,9 +12,11 @@ using Recam.DataAccess;
 namespace Recam.DataAccess.Migrations
 {
     [DbContext(typeof(RecamDbContext))]
-    partial class RecamDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260404065602_CreateListingCasesAndRelevantEntities")]
+    partial class CreateListingCasesAndRelevantEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,63 +204,6 @@ namespace Recam.DataAccess.Migrations
                     b.ToTable("AgentListingCases");
                 });
 
-            modelBuilder.Entity("Recam.Models.Entities.AgentPhotographyCompany", b =>
-                {
-                    b.Property<string>("AgentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PhotographyCompanyId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("AgentId", "PhotographyCompanyId");
-
-                    b.HasIndex("PhotographyCompanyId");
-
-                    b.ToTable("AgentPhotographyCompanies");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.CaseContact", b =>
-                {
-                    b.Property<int>("ContactId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactId"));
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ListingCaseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProfileUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ContactId");
-
-                    b.HasIndex("ListingCaseId");
-
-                    b.ToTable("CaseContacts");
-                });
-
             modelBuilder.Entity("Recam.Models.Entities.ListingCase", b =>
                 {
                     b.Property<int>("Id")
@@ -334,63 +280,6 @@ namespace Recam.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ListingCases");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.MediaAsset", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsHero")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSelect")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ListingCaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MediaType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MediaUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ListingCaseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MediaAssets");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PhotographyCompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PhotographyCompanies");
                 });
 
             modelBuilder.Entity("Recam.Models.Entities.User", b =>
@@ -527,7 +416,7 @@ namespace Recam.DataAccess.Migrations
             modelBuilder.Entity("Recam.Models.Entities.AgentListingCase", b =>
                 {
                     b.HasOne("Recam.Models.Entities.Agent", "Agent")
-                        .WithMany("AgentListingCases")
+                        .WithMany()
                         .HasForeignKey("AgentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -539,36 +428,6 @@ namespace Recam.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Agent");
-
-                    b.Navigation("ListingCase");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.AgentPhotographyCompany", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.Agent", "Agent")
-                        .WithMany("AgentPhotographyCompanies")
-                        .HasForeignKey("AgentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Recam.Models.Entities.PhotographyCompany", "PhotographyCompany")
-                        .WithMany("AgentPhotographyCompanies")
-                        .HasForeignKey("PhotographyCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Agent");
-
-                    b.Navigation("PhotographyCompany");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.CaseContact", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.ListingCase", "ListingCase")
-                        .WithMany("CaseContacts")
-                        .HasForeignKey("ListingCaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("ListingCase");
                 });
@@ -584,62 +443,9 @@ namespace Recam.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Recam.Models.Entities.MediaAsset", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.ListingCase", "ListingCase")
-                        .WithMany("MediaAssets")
-                        .HasForeignKey("ListingCaseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Recam.Models.Entities.User", "User")
-                        .WithMany("MediaAssets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ListingCase");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.User", "User")
-                        .WithOne("PhotographyCompany")
-                        .HasForeignKey("Recam.Models.Entities.PhotographyCompany", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.Agent", b =>
-                {
-                    b.Navigation("AgentListingCases");
-
-                    b.Navigation("AgentPhotographyCompanies");
-                });
-
             modelBuilder.Entity("Recam.Models.Entities.ListingCase", b =>
                 {
                     b.Navigation("AgentListingCases");
-
-                    b.Navigation("CaseContacts");
-
-                    b.Navigation("MediaAssets");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.Navigation("AgentPhotographyCompanies");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.User", b =>
-                {
-                    b.Navigation("MediaAssets");
-
-                    b.Navigation("PhotographyCompany");
                 });
 #pragma warning restore 612, 618
         }

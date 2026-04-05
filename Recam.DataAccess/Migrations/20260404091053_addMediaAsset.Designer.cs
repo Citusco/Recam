@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recam.DataAccess;
 
@@ -11,9 +12,11 @@ using Recam.DataAccess;
 namespace Recam.DataAccess.Migrations
 {
     [DbContext(typeof(RecamDbContext))]
-    partial class RecamDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260404091053_addMediaAsset")]
+    partial class addMediaAsset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,21 +204,6 @@ namespace Recam.DataAccess.Migrations
                     b.ToTable("AgentListingCases");
                 });
 
-            modelBuilder.Entity("Recam.Models.Entities.AgentPhotographyCompany", b =>
-                {
-                    b.Property<string>("AgentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PhotographyCompanyId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("AgentId", "PhotographyCompanyId");
-
-                    b.HasIndex("PhotographyCompanyId");
-
-                    b.ToTable("AgentPhotographyCompanies");
-                });
-
             modelBuilder.Entity("Recam.Models.Entities.CaseContact", b =>
                 {
                     b.Property<int>("ContactId")
@@ -255,7 +243,7 @@ namespace Recam.DataAccess.Migrations
 
                     b.HasIndex("ListingCaseId");
 
-                    b.ToTable("CaseContacts");
+                    b.ToTable("CaseContact");
                 });
 
             modelBuilder.Entity("Recam.Models.Entities.ListingCase", b =>
@@ -376,21 +364,7 @@ namespace Recam.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MediaAssets");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PhotographyCompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PhotographyCompanies");
+                    b.ToTable("MediaAsset");
                 });
 
             modelBuilder.Entity("Recam.Models.Entities.User", b =>
@@ -527,7 +501,7 @@ namespace Recam.DataAccess.Migrations
             modelBuilder.Entity("Recam.Models.Entities.AgentListingCase", b =>
                 {
                     b.HasOne("Recam.Models.Entities.Agent", "Agent")
-                        .WithMany("AgentListingCases")
+                        .WithMany()
                         .HasForeignKey("AgentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -541,25 +515,6 @@ namespace Recam.DataAccess.Migrations
                     b.Navigation("Agent");
 
                     b.Navigation("ListingCase");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.AgentPhotographyCompany", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.Agent", "Agent")
-                        .WithMany("AgentPhotographyCompanies")
-                        .HasForeignKey("AgentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Recam.Models.Entities.PhotographyCompany", "PhotographyCompany")
-                        .WithMany("AgentPhotographyCompanies")
-                        .HasForeignKey("PhotographyCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Agent");
-
-                    b.Navigation("PhotographyCompany");
                 });
 
             modelBuilder.Entity("Recam.Models.Entities.CaseContact", b =>
@@ -603,24 +558,6 @@ namespace Recam.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.HasOne("Recam.Models.Entities.User", "User")
-                        .WithOne("PhotographyCompany")
-                        .HasForeignKey("Recam.Models.Entities.PhotographyCompany", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Recam.Models.Entities.Agent", b =>
-                {
-                    b.Navigation("AgentListingCases");
-
-                    b.Navigation("AgentPhotographyCompanies");
-                });
-
             modelBuilder.Entity("Recam.Models.Entities.ListingCase", b =>
                 {
                     b.Navigation("AgentListingCases");
@@ -630,16 +567,9 @@ namespace Recam.DataAccess.Migrations
                     b.Navigation("MediaAssets");
                 });
 
-            modelBuilder.Entity("Recam.Models.Entities.PhotographyCompany", b =>
-                {
-                    b.Navigation("AgentPhotographyCompanies");
-                });
-
             modelBuilder.Entity("Recam.Models.Entities.User", b =>
                 {
                     b.Navigation("MediaAssets");
-
-                    b.Navigation("PhotographyCompany");
                 });
 #pragma warning restore 612, 618
         }
