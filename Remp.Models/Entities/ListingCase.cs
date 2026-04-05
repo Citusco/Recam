@@ -29,4 +29,5 @@ public class ListingCase
     public ICollection<AgentListingCase> AgentListingCases { get; set; }
     public ICollection<CaseContact> CaseContacts { get; set; }
     public ICollection<MediaAsset> MediaAssets { get; set; }
+    public ICollection<StatusHistory> StatusHistories { get; set; }
 }
