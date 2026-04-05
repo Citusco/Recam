@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recam.API", "Recam.API\Recam.API.csproj", "{06DDB0F8-74B6-429A-8E6E-5974A3DCD21E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.API", "Remp.API\Remp.API.csproj", "{06DDB0F8-74B6-429A-8E6E-5974A3DCD21E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recam.Services", "Recam.Services\Recam.Services.csproj", "{4BBC75C8-D891-40F4-A772-E15ACCEB6812}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.Service", "Remp.Service\Remp.Service.csproj", "{4BBC75C8-D891-40F4-A772-E15ACCEB6812}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recam.Repositories", "Recam.Repositories\Recam.Repositories.csproj", "{1423B42F-4B5A-4218-8AF7-CB2C71F2CBE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.Repositories", "Remp.Repositories\Remp.Repositories.csproj", "{1423B42F-4B5A-4218-8AF7-CB2C71F2CBE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recam.DataAccess", "Recam.DataAccess\Recam.DataAccess.csproj", "{D2D481CC-302A-4D8B-B85C-A597746B9420}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.DataAccess", "Remp.DataAccess\Remp.DataAccess.csproj", "{D2D481CC-302A-4D8B-B85C-A597746B9420}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recam.Models", "Recam.Models\Recam.Models.csproj", "{25137E36-41C0-498A-AB94-4D875A517233}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.Models", "Remp.Models\Remp.Models.csproj", "{25137E36-41C0-498A-AB94-4D875A517233}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
