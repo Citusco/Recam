@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Remp.Models\Remp.Models.csproj" />
+    <ProjectReference Include="..\Remp.Repositories\Remp.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

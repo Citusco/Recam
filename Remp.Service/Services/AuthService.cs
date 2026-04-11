@@ -8,6 +8,7 @@ using Remp.Service.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Remp.Repositories.Interfaces;
 
 namespace Remp.Service.Services;
 
@@ -17,18 +18,21 @@ public class AuthService : IAuthService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
+    private readonly IAgentRepository _agentRepository;
 
     public AuthService(
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
         IMapper mapper,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IAgentRepository agentRepository
     )
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
         _configuration = configuration;
+        _agentRepository = agentRepository;
     }
 
     // Register service.
@@ -51,6 +55,12 @@ public class AuthService : IAuthService
             await _roleManager.CreateAsync(new IdentityRole("Agent"));
         }
         await _userManager.AddToRoleAsync(user, "Agent");
+
+        // Create agent
+        Agent agent = _mapper.Map<Agent>(request);
+        agent.User = user;
+        agent.Id = user.Id;
+        await _agentRepository.AddAgentToDbAsync(agent);
 
         return GenerateToken(user, "Agent");
     }
