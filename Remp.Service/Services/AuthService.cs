@@ -35,11 +35,14 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         User user = _mapper.Map<User>(request);
+        // username is as the same as email
+        user.UserName = request.Email;
+
         IdentityResult result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
-            throw new Exception("Create User failed.");
+            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
         // Assign role or create new role
