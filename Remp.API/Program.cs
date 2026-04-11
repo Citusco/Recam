@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Remp.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Remp.Repositories.Interfaces;
+using Remp.Repositories.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
 
 // Scopes
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAgentRepository, AgentRepository>();
 
 // Jwt autentication
 builder.Services.AddAuthentication(options =>
