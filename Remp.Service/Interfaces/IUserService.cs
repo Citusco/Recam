@@ -5,5 +5,5 @@ namespace Remp.Service.Interfaces;
 
 public interface IUserService
 {
-    public Task<UserResponseDto> GetUserAsync (string id);
+    Task<UserResponseDto> GetUserAsync (string id);
 }

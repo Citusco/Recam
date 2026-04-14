@@ -30,6 +30,8 @@ builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAgentRepository, AgentRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IListingCaseRepository, ListingCaseRepository>();
+builder.Services.AddScoped<IListingCaseService, ListingCaseService>();
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
