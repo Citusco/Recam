@@ -29,4 +29,14 @@ public class AgentRepository : IAgentRepository
             throw new Exception("Add agent failed");
         }
     }
+
+    public async Task<Agent> GetAgentAsync(string id)
+    {
+        Agent? agent = await _dbContext.Agents.FindAsync(id);
+        if (agent == null)
+        {
+            throw new Exception("Cannot find the agent.");
+        }
+        return agent;
+    }
 }
