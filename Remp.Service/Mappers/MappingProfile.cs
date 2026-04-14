@@ -12,5 +12,7 @@ public class MappingProfile : Profile
         CreateMap<RegisterRequestDto, User>();
         CreateMap<RegisterRequestDto, Agent>();
         CreateMap<Agent, UserResponseDto>();
+        CreateMap<CreateListingCaseRequestDto, ListingCase>();
+        CreateMap<ListingCase, ListingCaseResponseDto>();
     }
 }

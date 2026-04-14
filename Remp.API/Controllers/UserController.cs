@@ -22,7 +22,7 @@ namespace Remp.API.Controllers
         [Authorize]
         public async Task<ActionResult<UserResponseDto>> GetUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             UserResponseDto userResponseDto = await _userService.GetUserAsync(userId);
             return Ok(userResponseDto);
         }
