@@ -20,11 +20,21 @@ namespace Remp.API.Controllers
 
         [HttpPost]
         [Authorize(Roles ="Admin")]
-        public async Task<ActionResult<ListingCaseResponseDto>> CreateLisingCase([FromBody] CreateListingCaseRequestDto listingCaseRequestDto)
+        public async Task<ActionResult<ListingCaseResponseDto>> CreateListingCase([FromBody] CreateListingCaseRequestDto listingCaseRequestDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             ListingCaseResponseDto responseDto = await _service.CreateListingCaseAsync(listingCaseRequestDto, userId);
-            return CreatedAtAction(nameof(CreateLisingCase), responseDto);
+            return CreatedAtAction(nameof(CreateListingCase), responseDto);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<ListingCaseResponseDto>>> GetAllListingCase()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var role = User.FindFirst(ClaimTypes.Role)!.Value;
+            IEnumerable<ListingCaseResponseDto> responseDtos = await _service.GetAllAsync(userId, role);
+            return Ok(responseDtos);
         }
     }
 }

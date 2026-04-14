@@ -34,4 +34,13 @@ public class ListingCaseService : IListingCaseService
         ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(result);
         return responseDto;
     }
+
+    public async Task<IEnumerable<ListingCaseResponseDto>> GetAllAsync(string userId, string role)
+    {
+        // Get all Listingcases.
+        IEnumerable<ListingCase> listingCases = await _listingCaseRepository.GetAllAsync(userId, role);
+
+        IEnumerable<ListingCaseResponseDto> results = _mapper.Map<IEnumerable<ListingCaseResponseDto>>(listingCases);
+        return results;
+    }
 }

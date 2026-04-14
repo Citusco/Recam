@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
 using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
@@ -7,8 +8,8 @@ namespace Remp.Repositories.Repositories;
 public class ListingCaseRepository : IListingCaseRepository
 {
     private readonly RempDbContext _dbContext;
-    
-    public ListingCaseRepository (RempDbContext dbContext)
+
+    public ListingCaseRepository(RempDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -24,7 +25,27 @@ public class ListingCaseRepository : IListingCaseRepository
         }
         else
         {
-            throw new Exception ("Failed to add listing case.");
+            throw new Exception("Failed to add listing case.");
         }
+    }
+
+    public async Task<IEnumerable<ListingCase>> GetAllAsync(string userId, string role)
+    {
+        IEnumerable<ListingCase> listingCases;
+
+        // Admins get all cases created by themselves
+        if (role == "Admin")
+            listingCases = await _dbContext.ListingCases
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        else
+        // Agents get all cases related to them.
+            listingCases = await _dbContext.AgentListingCases
+                .Where(p => p.AgentId == userId)
+                .Include(a => a.ListingCase)
+                .Select(a => a.ListingCase)
+                .ToListAsync();
+
+        return listingCases;
     }
 }
