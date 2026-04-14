@@ -43,4 +43,15 @@ public class ListingCaseService : IListingCaseService
         IEnumerable<ListingCaseResponseDto> results = _mapper.Map<IEnumerable<ListingCaseResponseDto>>(listingCases);
         return results;
     }
+    public async Task<ListingCaseDetailResponseDto> GetAsync(int listingCaseId, string userId, string role)
+    {
+        ListingCase? listingCase = await _listingCaseRepository.GetAsync(listingCaseId, userId, role);
+        // Need to handle null
+        if (listingCase == null)
+        {
+            throw new Exception("Null listing case.");
+        }
+        ListingCaseDetailResponseDto responseDto = _mapper.Map<ListingCaseDetailResponseDto>(listingCase);
+        return responseDto;
+    }
 }

@@ -36,5 +36,15 @@ namespace Remp.API.Controllers
             IEnumerable<ListingCaseResponseDto> responseDtos = await _service.GetAllAsync(userId, role);
             return Ok(responseDtos);
         }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<ActionResult<ListingCaseDetailResponseDto>> GetListingCaseDetails([FromRoute] int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var role = User.FindFirst(ClaimTypes.Role)!.Value;
+            ListingCaseDetailResponseDto responseDto = await _service.GetAsync(id, userId, role);
+            return Ok(responseDto);
+        }
     }
 }

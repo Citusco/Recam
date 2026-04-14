@@ -39,7 +39,7 @@ public class ListingCaseRepository : IListingCaseRepository
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
         else
-        // Agents get all cases related to them.
+            // Agents get all cases related to them.
             listingCases = await _dbContext.AgentListingCases
                 .Where(p => p.AgentId == userId)
                 .Include(a => a.ListingCase)
@@ -47,5 +47,26 @@ public class ListingCaseRepository : IListingCaseRepository
                 .ToListAsync();
 
         return listingCases;
+    }
+
+    public async Task<ListingCase?> GetAsync(int listingcaseId, string userId, string role)
+    {
+        // Accessibility should be checked first.
+        bool hasAccess = true;
+        if (role != "Admin")
+        {
+            hasAccess = await _dbContext.AgentListingCases
+                .AnyAsync(p => p.AgentId == userId && p.ListingCaseId == listingcaseId);
+        }
+        else
+        {
+            hasAccess = await _dbContext.ListingCases
+            .AnyAsync(p => p.UserId == userId && p.Id == listingcaseId);
+        }
+
+        if (!hasAccess)
+            throw new Exception("Access denied.");
+
+        return await _dbContext.ListingCases.FindAsync(listingcaseId);
     }
 }
