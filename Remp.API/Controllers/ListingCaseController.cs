@@ -19,7 +19,7 @@ namespace Remp.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Agent")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<ListingCaseResponseDto>> CreateLisingCase([FromBody] CreateListingCaseRequestDto listingCaseRequestDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;

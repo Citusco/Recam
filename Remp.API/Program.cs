@@ -75,4 +75,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    await Remp.DataAccess.Seeding.DbSeeder.SeedAsync(scope.ServiceProvider);
+}
+
 app.Run();
