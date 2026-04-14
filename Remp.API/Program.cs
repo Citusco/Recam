@@ -29,6 +29,10 @@ builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
 // Scopes
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAgentRepository, AgentRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Identity
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
 
 // Jwt autentication
 builder.Services.AddAuthentication(options =>
@@ -49,9 +53,6 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
-
-// Identity
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
 
 // Controllers
 builder.Services.AddControllers();
