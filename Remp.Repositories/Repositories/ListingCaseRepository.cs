@@ -97,4 +97,15 @@ public class ListingCaseRepository : IListingCaseRepository
         await _dbContext.SaveChangesAsync();
         return existingCase;
     }
+
+    public async Task DeleteAsync(int listingCaseId, string userId)
+    {
+        ListingCase? listingCase = await _dbContext.ListingCases.FirstOrDefaultAsync(p => p.Id == listingCaseId && p.UserId == userId);
+        if (listingCase == null)
+            throw new KeyNotFoundException("Listing case not found");
+        if (listingCase.IsDeleted)
+            throw new InvalidOperationException("Cannot delete deleted case.");
+        listingCase.IsDeleted = true;
+        await _dbContext.SaveChangesAsync();
+    }
 }

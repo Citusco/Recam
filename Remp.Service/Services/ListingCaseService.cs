@@ -63,4 +63,9 @@ public class ListingCaseService : IListingCaseService
         ListingCaseDetailResponseDto responseDto = _mapper.Map<ListingCaseDetailResponseDto>(listingCase);
         return responseDto;
     }
+
+    public async Task DeleteAsync(int listingCaseId, string userId)
+    {
+        await _listingCaseRepository.DeleteAsync(listingCaseId, userId);
+    }
 }
