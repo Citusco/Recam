@@ -19,7 +19,7 @@ namespace Remp.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ListingCaseResponseDto>> CreateListingCase([FromBody] CreateListingCaseRequestDto listingCaseRequestDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
@@ -44,6 +44,17 @@ namespace Remp.API.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             var role = User.FindFirst(ClaimTypes.Role)!.Value;
             ListingCaseDetailResponseDto responseDto = await _service.GetAsync(id, userId, role);
+            return Ok(responseDto);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ListingCaseDetailResponseDto>> UpdateListingCase(
+            [FromRoute] int id,
+            [FromBody] UpdateListingCaseRequestDto requestDto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            ListingCaseDetailResponseDto responseDto = await _service.UpdateAsync(id, userId, requestDto);
             return Ok(responseDto);
         }
     }
