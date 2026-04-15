@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
 using Remp.Models.Entities;
+using Remp.Models.Enums;
 using Remp.Repositories.Interfaces;
 
 namespace Remp.Repositories.Repositories;
@@ -106,6 +107,12 @@ public class ListingCaseRepository : IListingCaseRepository
         if (listingCase.IsDeleted)
             throw new InvalidOperationException("Cannot delete deleted case.");
         listingCase.IsDeleted = true;
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateStatus(ListingCase listingCase)
+    {
+        listingCase.ListCaseStatus += 1;
         await _dbContext.SaveChangesAsync();
     }
 }

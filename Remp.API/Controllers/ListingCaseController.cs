@@ -66,5 +66,16 @@ namespace Remp.API.Controllers
             await _service.DeleteAsync(id, userId);
             return Ok(new {message = "Listing case deleted successfully."});
         }
+
+        [HttpPatch("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ListingCaseResponseDto>> UpdateListingStatus([FromRoute] int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var role = User.FindFirst(ClaimTypes.Role)!.Value;
+
+            ListingCaseResponseDto responseDto = await _service.UpdateListingStatus(id, userId, role);
+            return responseDto;
+        }
     }
 }
