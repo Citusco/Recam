@@ -32,6 +32,8 @@ builder.Services.AddScoped<IAgentRepository, AgentRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IListingCaseRepository, ListingCaseRepository>();
 builder.Services.AddScoped<IListingCaseService, ListingCaseService>();
+builder.Services.AddScoped<IBlobUploadService, BlobUploadService>();
+
 
 // Identity
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
