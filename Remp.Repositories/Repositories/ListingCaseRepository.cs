@@ -69,4 +69,32 @@ public class ListingCaseRepository : IListingCaseRepository
 
         return await _dbContext.ListingCases.FindAsync(listingcaseId);
     }
+
+    public async Task<ListingCase> UpdateAsync(int listingCaseId, string userId, ListingCase updatedData)
+    {
+        ListingCase? existingCase = await _dbContext.ListingCases
+            .FirstOrDefaultAsync(p => p.Id == listingCaseId && p.UserId == userId);
+
+        if (existingCase == null)
+            throw new KeyNotFoundException("Listing case not found.");
+
+        existingCase.Title = updatedData.Title;
+        existingCase.Description = updatedData.Description;
+        existingCase.Street = updatedData.Street;
+        existingCase.City = updatedData.City;
+        existingCase.State = updatedData.State;
+        existingCase.Postcode = updatedData.Postcode;
+        existingCase.Longitude = updatedData.Longitude;
+        existingCase.Latitude = updatedData.Latitude;
+        existingCase.Price = updatedData.Price;
+        existingCase.Bedrooms = updatedData.Bedrooms;
+        existingCase.Bathrooms = updatedData.Bathrooms;
+        existingCase.Garages = updatedData.Garages;
+        existingCase.FloorArea = updatedData.FloorArea;
+        existingCase.PropertyType = updatedData.PropertyType;
+        existingCase.SaleCategory = updatedData.SaleCategory;
+
+        await _dbContext.SaveChangesAsync();
+        return existingCase;
+    }
 }

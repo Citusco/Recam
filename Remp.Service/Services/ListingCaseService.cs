@@ -43,6 +43,15 @@ public class ListingCaseService : IListingCaseService
         IEnumerable<ListingCaseResponseDto> results = _mapper.Map<IEnumerable<ListingCaseResponseDto>>(listingCases);
         return results;
     }
+    public async Task<ListingCaseDetailResponseDto> UpdateAsync(int listingCaseId, string userId, UpdateListingCaseRequestDto requestDto)
+    {
+        // Map DTO to a new entity (no Id, UserId, CreatedAt)
+        ListingCase updatedData = _mapper.Map<ListingCase>(requestDto);
+
+        ListingCase result = await _listingCaseRepository.UpdateAsync(listingCaseId, userId, updatedData);
+        return _mapper.Map<ListingCaseDetailResponseDto>(result);
+    }
+
     public async Task<ListingCaseDetailResponseDto> GetAsync(int listingCaseId, string userId, string role)
     {
         ListingCase? listingCase = await _listingCaseRepository.GetAsync(listingCaseId, userId, role);
