@@ -64,7 +64,7 @@ namespace Remp.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             await _service.DeleteAsync(id, userId);
-            return NoContent();
+            return Ok(new {message = "Listing case deleted successfully."});
         }
     }
 }
