@@ -68,4 +68,19 @@ public class ListingCaseService : IListingCaseService
     {
         await _listingCaseRepository.DeleteAsync(listingCaseId, userId);
     }
+    
+    public async Task<ListingCaseResponseDto> UpdateListingStatus(int listingCaseId, string userId, string role)
+    {
+        // Get Listingcase and check accessibility.
+        ListingCase? listingCase = await _listingCaseRepository.GetAsync(listingCaseId, userId, role);
+        if (listingCase == null)
+            throw new KeyNotFoundException("Listing case not found.");
+        
+        // Status can only move forward, reverting is not allowed.
+        if (listingCase.ListCaseStatus == ListCaseStatus.Delivered)
+            throw new InvalidOperationException("Cannot change delivered status");
+        await _listingCaseRepository.UpdateStatus(listingCase);
+        ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(listingCase);
+        return responseDto;
+    }
 }
