@@ -29,5 +29,16 @@ namespace Remp.API.Controllers
             IEnumerable<CreateMediaAssetResponseDto> responseDtos = await _service.CreateAsync(files, mediaType, id, userId);
             return Ok(responseDtos);
         }
+
+        [HttpGet("{id}/media")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<MediaAssetResponseDto>>> GetAsync([FromRoute] int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            var role = User.FindFirst(ClaimTypes.Role)!.Value;
+
+            IEnumerable<MediaAssetResponseDto> responseDtos = await _service.GetAsync(id, userId, role);
+            return Ok(responseDtos);
+        }
     }
 }

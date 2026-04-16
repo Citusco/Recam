@@ -11,4 +11,5 @@ public interface IListingCaseRepository
     Task DeleteAsync(int listingCaseId, string userId);
     Task UpdateStatus(ListingCase listingCase);
     Task<bool> ExistsAsync(int listingCaseId, string userId);
+    Task<bool> IsAssignedToAgentAsync(int listingCaseId, string agentId);
 }

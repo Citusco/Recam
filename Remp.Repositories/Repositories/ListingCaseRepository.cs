@@ -121,4 +121,9 @@ public class ListingCaseRepository : IListingCaseRepository
     {
         return await _dbContext.ListingCases.AnyAsync(p => p.UserId == userId && p.Id == listingCaseId);
     }
+
+    public async Task<bool> IsAssignedToAgentAsync(int listingCaseId, string agentId)
+    {
+        return await _dbContext.AgentListingCases.AnyAsync(p => p.ListingCaseId == listingCaseId && p.AgentId == agentId);
+    }
 }
