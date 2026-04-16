@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
 using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
@@ -24,5 +26,11 @@ public class MediaAssetRepository : IMediaAssetRepository
         }
         
         return mediaAsset;
+    }
+
+    public async Task<IEnumerable<MediaAsset>> GetAssetsAsync(int listingCaseId)
+    {
+        List<MediaAsset> mediaAssets = await _dbcontext.MediaAssets.Where(p => p.ListingCaseId == listingCaseId && !p.IsDeleted).ToListAsync();
+        return mediaAssets;
     }
 }

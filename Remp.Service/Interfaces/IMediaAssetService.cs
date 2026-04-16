@@ -12,4 +12,6 @@ public interface IMediaAssetService
         int listingCaseId,
         string userId  
     );
+
+    Task<IEnumerable<MediaAssetResponseDto>> GetAsync(int listingCaseId, string userId, string role);
 }

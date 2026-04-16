@@ -17,5 +17,6 @@ public class MappingProfile : Profile
         CreateMap<ListingCase, ListingCaseDetailResponseDto>();
         CreateMap<UpdateListingCaseRequestDto, ListingCase>();
         CreateMap<MediaAsset, CreateMediaAssetResponseDto>();
+        CreateMap<MediaAsset, MediaAssetResponseDto>();
     }
 }
