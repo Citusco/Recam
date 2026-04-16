@@ -10,4 +10,5 @@ public interface IListingCaseRepository
     Task<ListingCase> UpdateAsync(int listingCaseId, string userId, ListingCase updatedData);
     Task DeleteAsync(int listingCaseId, string userId);
     Task UpdateStatus(ListingCase listingCase);
+    Task<bool> ExistsAsync(int listingCaseId, string userId);
 }

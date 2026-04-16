@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Remp.DataAccess.Data;
 using Remp.Models.Entities;
@@ -114,5 +115,10 @@ public class ListingCaseRepository : IListingCaseRepository
     {
         listingCase.ListCaseStatus += 1;
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(int listingCaseId, string userId)
+    {
+        return await _dbContext.ListingCases.AnyAsync(p => p.UserId == userId && p.Id == listingCaseId);
     }
 }
