@@ -14,4 +14,5 @@ public interface IMediaAssetService
     );
 
     Task<IEnumerable<MediaAssetResponseDto>> GetAsync(int listingCaseId, string userId, string role);
+    Task DeleteAsync(string userId, int mediaId);
 }

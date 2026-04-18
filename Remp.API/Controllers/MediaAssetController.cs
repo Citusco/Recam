@@ -40,5 +40,15 @@ namespace Remp.API.Controllers
             IEnumerable<MediaAssetResponseDto> responseDtos = await _service.GetAsync(id, userId, role);
             return Ok(responseDtos);
         }
+
+        [HttpDelete("/api/media/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> DeleteAsync([FromRoute] int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+            await _service.DeleteAsync(userId, id);
+            return Ok(new {message = "Media asset deleted successfully."});
+        }
     }
 }
