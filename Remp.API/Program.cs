@@ -35,6 +35,8 @@ builder.Services.AddScoped<IListingCaseService, ListingCaseService>();
 builder.Services.AddScoped<IBlobUploadService, BlobUploadService>();
 builder.Services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
 builder.Services.AddScoped<IMediaAssetService, MediaAssetService>();
+builder.Services.AddScoped<ISelectedMediaAssetRepository, SelectedMediaAssetRepository>();
+builder.Services.AddScoped<ISelectedMediaAssetService, SelectedMediaAssetService>();
 
 
 // Identity

@@ -17,6 +17,7 @@ public class RempDbContext : IdentityDbContext<User, IdentityRole, string>
     public DbSet<MediaAsset> MediaAssets { get; set; }
     public DbSet<PhotographyCompany> PhotographyCompanies { get; set; }
     public DbSet<StatusHistory> StatusHistories { get; set; }
+    public DbSet<SelectedMedia> SelectedMedias { get; set; }
 
     public RempDbContext (DbContextOptions<RempDbContext> options):base(options)
     {
@@ -43,6 +44,14 @@ public class RempDbContext : IdentityDbContext<User, IdentityRole, string>
         modelBuilder.Entity<MediaAsset>()
         .HasOne(p => p.ListingCase)
         .WithMany(p => p.MediaAssets)
+        .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelectedMedia>()
+        .HasOne(p => p.ListingCase)
+        .WithMany()
+        .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelectedMedia>()
+        .HasOne(p => p.MediaAsset)
+        .WithMany()
         .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<StatusHistory>()
         .HasOne(p => p.ListingCase)
