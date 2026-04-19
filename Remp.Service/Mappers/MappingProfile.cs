@@ -1,4 +1,3 @@
-using System;
 using Remp.Models.Entities;
 using Remp.Service.DTOs;
 using AutoMapper;
@@ -18,5 +17,6 @@ public class MappingProfile : Profile
         CreateMap<UpdateListingCaseRequestDto, ListingCase>();
         CreateMap<MediaAsset, CreateMediaAssetResponseDto>();
         CreateMap<MediaAsset, MediaAssetResponseDto>();
+        CreateMap<SelectedMedia, SelectMediaResponseDto>();
     }
 }

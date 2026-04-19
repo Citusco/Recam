@@ -11,11 +11,15 @@ namespace Remp.API.Controllers
     [ApiController]
     public class MediaAssetController : ControllerBase
     {
-        private readonly IMediaAssetService _service;
+        private readonly IMediaAssetService _mediaService;
+        private readonly ISelectedMediaAssetService _selectedMediaService;
         
-        public MediaAssetController(IMediaAssetService service)
+        public MediaAssetController(
+            IMediaAssetService mediaService,
+            ISelectedMediaAssetService selectedMediaService)
         {
-            _service = service;
+            _mediaService = mediaService;
+            _selectedMediaService = selectedMediaService;
         }
 
         [HttpPost("{id}/media")]
@@ -26,7 +30,7 @@ namespace Remp.API.Controllers
             [FromForm] MediaType mediaType)
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-            IEnumerable<CreateMediaAssetResponseDto> responseDtos = await _service.CreateAsync(files, mediaType, id, userId);
+            IEnumerable<CreateMediaAssetResponseDto> responseDtos = await _mediaService.CreateAsync(files, mediaType, id, userId);
             return Ok(responseDtos);
         }
 
@@ -37,7 +41,7 @@ namespace Remp.API.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             var role = User.FindFirst(ClaimTypes.Role)!.Value;
 
-            IEnumerable<MediaAssetResponseDto> responseDtos = await _service.GetAsync(id, userId, role);
+            IEnumerable<MediaAssetResponseDto> responseDtos = await _mediaService.GetAsync(id, userId, role);
             return Ok(responseDtos);
         }
 
@@ -47,8 +51,21 @@ namespace Remp.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-            await _service.DeleteAsync(userId, id);
+            await _mediaService.DeleteAsync(userId, id);
             return Ok(new {message = "Media asset deleted successfully."});
+        }
+
+        [HttpPut("{id}/selected-media")]
+        [Authorize(Roles = "Agent")]
+        public async Task<ActionResult<IEnumerable<SelectMediaResponseDto>>> SelectMedia (
+            [FromRoute] int id,
+            [FromBody] SelectMediaRequestDto requestDto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
+            IEnumerable<SelectMediaResponseDto> responseDtos = await _selectedMediaService.CreateAsync(id, userId, requestDto);
+
+            return Ok(responseDtos);
         }
     }
 }
