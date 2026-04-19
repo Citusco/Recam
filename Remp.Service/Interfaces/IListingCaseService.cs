@@ -10,4 +10,5 @@ public interface IListingCaseService
     Task<ListingCaseDetailResponseDto> UpdateAsync(int listingCaseId, string userId, UpdateListingCaseRequestDto requestDto);
     Task DeleteAsync(int listingCaseId, string userId);
     Task<ListingCaseResponseDto> UpdateListingStatus(int listingCaseId, string userId, string role);
+    Task<AgentListingCaseResponseDto> AssignAgentToListingAsync(int listingCaseId, string agentId);
 }

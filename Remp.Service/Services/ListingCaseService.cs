@@ -83,4 +83,17 @@ public class ListingCaseService : IListingCaseService
         ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(listingCase);
         return responseDto;
     }
+
+    public async Task<AgentListingCaseResponseDto> AssignAgentToListingAsync(int listingCaseId, string agentId)
+    {
+        AgentListingCase agentListingCase = new()
+        {
+            ListingCaseId = listingCaseId,
+            AgentId = agentId
+        };
+        
+        await _listingCaseRepository.AssignAgentToListingAsync(agentListingCase);
+        var responseDto = _mapper.Map<AgentListingCaseResponseDto>(agentListingCase);
+        return responseDto;
+    }
 }
