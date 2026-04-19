@@ -126,4 +126,14 @@ public class ListingCaseRepository : IListingCaseRepository
     {
         return await _dbContext.AgentListingCases.AnyAsync(p => p.ListingCaseId == listingCaseId && p.AgentId == agentId);
     }
+
+    public async Task AssignAgentToListingAsync(AgentListingCase agentListingCase)
+    {
+        await _dbContext.AgentListingCases.AddAsync(agentListingCase);
+        int changes = _dbContext.SaveChanges();
+        if (changes == 0)
+        {
+            throw new InvalidOperationException("Failed to assign agent to listing.");
+        }
+    }
 }

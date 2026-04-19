@@ -18,5 +18,6 @@ public class MappingProfile : Profile
         CreateMap<MediaAsset, CreateMediaAssetResponseDto>();
         CreateMap<MediaAsset, MediaAssetResponseDto>();
         CreateMap<SelectedMedia, SelectMediaResponseDto>();
+        CreateMap<AgentListingCase, AgentListingCaseResponseDto>();
     }
 }

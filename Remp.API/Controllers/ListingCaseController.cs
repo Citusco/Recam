@@ -58,6 +58,14 @@ namespace Remp.API.Controllers
             return Ok(responseDto);
         }
 
+        [HttpPost("{id}/agent/{agentId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<AgentListingCaseResponseDto>> AssignAgentToListingAsync ([FromRoute] int id, [FromRoute] string agentId)
+        {
+            AgentListingCaseResponseDto responseDto = await _service.AssignAgentToListingAsync(id, agentId);
+            return Ok(responseDto);
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteListingCase([FromRoute] int id)
@@ -77,5 +85,6 @@ namespace Remp.API.Controllers
             ListingCaseResponseDto responseDto = await _service.UpdateListingStatus(id, userId, role);
             return responseDto;
         }
+
     }
 }
