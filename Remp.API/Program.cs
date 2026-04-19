@@ -37,6 +37,8 @@ builder.Services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
 builder.Services.AddScoped<IMediaAssetService, MediaAssetService>();
 builder.Services.AddScoped<ISelectedMediaAssetRepository, SelectedMediaAssetRepository>();
 builder.Services.AddScoped<ISelectedMediaAssetService, SelectedMediaAssetService>();
+builder.Services.AddScoped<IPhotographyCompanyRepository, PhotographyCompanyRepository>();
+builder.Services.AddScoped<IPhotographyCompanyService, PhotographyCompanyService>();
 
 
 // Identity
