@@ -35,4 +35,13 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
 
         return (agents, totalCount);
     }
+
+    public async Task<IEnumerable<Agent>> GetCompanyAgentsAsync(string companyId)
+    {
+        return await _dbcontext.AgentPhotographyCompanies
+            .Where(p => p.PhotographyCompanyId == companyId)
+            .Include(p => p.Agent)
+            .Select(p => p.Agent)
+            .ToListAsync();
+    }
 }
