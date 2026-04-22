@@ -27,4 +27,12 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
     {
         return await _dbcontext.AgentPhotographyCompanies.AnyAsync(p => p.PhotographyCompanyId == companyId && p.AgentId == agentId);
     }
+
+    public async Task<(IEnumerable<Agent>, int count)> GetAllAgentsAsync(int page, int pageSize)
+    {
+        int totalCount = await _dbcontext.Agents.CountAsync();
+        IEnumerable<Agent> agents = await _dbcontext.Agents.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return (agents, totalCount);
+    }
 }

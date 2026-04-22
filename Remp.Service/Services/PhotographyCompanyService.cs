@@ -35,4 +35,17 @@ public class PhotographyCompanyService : IPhotographyCompanyService
         AgentPhotographyCompanyResponseDto responseDto = _mapper.Map<AgentPhotographyCompanyResponseDto>(agentPhotographyCompany);
         return responseDto;
     }
+
+    public async Task<PagedResponseDto<AgentResponseDto>> GetAllAgentsAsync(int page, int pageSize)
+    {
+        var (agents, totalCount) = await _photographyCompanyRepository.GetAllAgentsAsync(page, pageSize);
+        IEnumerable<AgentResponseDto> items = _mapper.Map<IEnumerable<AgentResponseDto>>(agents);
+        return new PagedResponseDto<AgentResponseDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
 }
