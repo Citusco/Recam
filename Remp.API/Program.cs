@@ -1,16 +1,17 @@
-using Scalar.AspNetCore;
-using Remp.DataAccess.Data;
-using Microsoft.EntityFrameworkCore;
-using Remp.Service.Mappers;
-using Remp.Service.Interfaces;
-using Remp.Service.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Remp.Models.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Remp.API.Middleware;
+using Remp.DataAccess.Data;
+using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
 using Remp.Repositories.Repositories;
+using Remp.Service.Interfaces;
+using Remp.Service.Mappers;
+using Remp.Service.Services;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +19,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-
 // Dbcontext
 builder.Services.AddDbContext<RempDbContext>(Options =>
-Options.UseSqlServer(builder.Configuration.GetConnectionString("RecamDb")));
+    Options.UseSqlServer(builder.Configuration.GetConnectionString("RecamDb"))
+);
 
 // Mappers
-builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 
 // Scopes
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -40,29 +41,35 @@ builder.Services.AddScoped<ISelectedMediaAssetService, SelectedMediaAssetService
 builder.Services.AddScoped<IPhotographyCompanyRepository, PhotographyCompanyRepository>();
 builder.Services.AddScoped<IPhotographyCompanyService, PhotographyCompanyService>();
 
-
 // Identity
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
 
+// Exception Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Jwt autentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder
+    .Services.AddAuthentication(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-    };
-});
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            ),
+        };
+    });
 
 // Controllers
 builder.Services.AddControllers();
@@ -77,11 +84,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 
 // Seed database
 using (var scope = app.Services.CreateScope())
