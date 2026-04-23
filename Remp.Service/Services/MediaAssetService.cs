@@ -84,11 +84,12 @@ public class MediaAssetService : IMediaAssetService
 
     public async Task DeleteAsync(string userId, int mediaId)
     {
-        bool mediaExist = await _mediaAssetRepository.ExistAsync(mediaId, userId);
-        if (!mediaExist)
+        MediaAsset? mediaAsset = await _mediaAssetRepository.GetByIdAsync(mediaId, userId);
+        if (mediaAsset == null)
         {
-            throw new KeyNotFoundException("Media cannot found");
+            throw new KeyNotFoundException("Media not found.");
         }
+        await _blobService.DeleteAsync(mediaAsset.MediaUrl);
         await _mediaAssetRepository.DeleteAsync(mediaId);
     }
 }

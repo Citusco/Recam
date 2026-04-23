@@ -52,6 +52,12 @@ public class MediaAssetRepository : IMediaAssetRepository
         await _dbcontext.SaveChangesAsync();
     }
 
+    public async Task<MediaAsset?> GetByIdAsync(int mediaId, string userId)
+    {
+        return await _dbcontext.MediaAssets
+            .FirstOrDefaultAsync(p => p.Id == mediaId && p.UserId == userId && !p.IsDeleted);
+    }
+
     public async Task<bool> ExistAsync(int mediaId, string userId)
     {
         return await _dbcontext.MediaAssets.AnyAsync(p => p.Id == mediaId && p.UserId == userId);
