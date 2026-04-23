@@ -13,6 +13,16 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
     {
         _dbcontext = dbContext;
     }
+    public async Task AddCompanyAsync(PhotographyCompany company)
+    {
+        _dbcontext.PhotographyCompanies.Add(company);
+        int changes = await _dbcontext.SaveChangesAsync();
+        if (changes == 0)
+        {
+            throw new InvalidOperationException("Failed to create photography company.");
+        }
+    }
+
     public async Task AssignAgentToCompany(AgentPhotographyCompany agentPhotographyCompany)
     {
         _dbcontext.AgentPhotographyCompanies.Add(agentPhotographyCompany);

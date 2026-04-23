@@ -22,6 +22,13 @@ namespace Remp.API.Controllers
             return CreatedAtAction(nameof(Register), authResponseDto);
         }
 
+        [HttpPost("register/admin")]
+        public async Task<ActionResult<AuthResponseDto>> RegisterAdmin([FromBody] RegisterAdminRequestDto requestDto)
+        {
+            AuthResponseDto authResponseDto = await _service.RegisterAdminAsync(requestDto);
+            return CreatedAtAction(nameof(RegisterAdmin), authResponseDto);
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto requestDto)
         {

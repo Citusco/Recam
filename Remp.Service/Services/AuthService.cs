@@ -19,13 +19,15 @@ public class AuthService : IAuthService
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
     private readonly IAgentRepository _agentRepository;
+    private readonly IPhotographyCompanyRepository _photographyCompanyRepository;
 
     public AuthService(
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
         IMapper mapper,
         IConfiguration configuration,
-        IAgentRepository agentRepository
+        IAgentRepository agentRepository,
+        IPhotographyCompanyRepository photographyCompanyRepository
     )
     {
         _userManager = userManager;
@@ -33,6 +35,7 @@ public class AuthService : IAuthService
         _mapper = mapper;
         _configuration = configuration;
         _agentRepository = agentRepository;
+        _photographyCompanyRepository = photographyCompanyRepository;
     }
 
     // Register service.
@@ -63,6 +66,34 @@ public class AuthService : IAuthService
         await _agentRepository.AddAgentToDbAsync(agent);
 
         return GenerateToken(user, "Agent");
+    }
+
+    // Register Admin service.
+    public async Task<AuthResponseDto> RegisterAdminAsync(RegisterAdminRequestDto request)
+    {
+        User user = new User { UserName = request.Email, Email = request.Email };
+
+        IdentityResult result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        if (!await _roleManager.RoleExistsAsync("Admin"))
+        {
+            await _roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+        await _userManager.AddToRoleAsync(user, "Admin");
+
+        PhotographyCompany company = new PhotographyCompany
+        {
+            Id = user.Id,
+            User = user,
+            PhotographyCompanyName = request.PhotographyCompanyName
+        };
+        await _photographyCompanyRepository.AddCompanyAsync(company);
+
+        return GenerateToken(user, "Admin");
     }
 
     // Login service
