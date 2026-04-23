@@ -16,6 +16,13 @@ public class BlobUploadService : IBlobUploadService
         _containerClient = serviceClient.GetBlobContainerClient("recam");
     }
 
+    public async Task DeleteAsync(string blobUrl)
+    {
+        string blobName = new Uri(blobUrl).Segments.Last();
+        BlobClient blobClient = _containerClient.GetBlobClient(blobName);
+        await blobClient.DeleteIfExistsAsync();
+    }
+
     public async Task<string> UploadAsync(IFormFile file)
     {
         // Generate a unique filename to avoid collisions
