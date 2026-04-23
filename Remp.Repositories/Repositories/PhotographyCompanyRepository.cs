@@ -33,6 +33,8 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
         int totalCount = await _dbcontext.Agents.CountAsync();
         IEnumerable<Agent> agents = await _dbcontext.Agents
             .Include(a => a.User)
+            .Include(a => a.AgentPhotographyCompanies)
+                .ThenInclude(apc => apc.PhotographyCompany)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -46,6 +48,9 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
             .Where(p => p.PhotographyCompanyId == companyId)
             .Include(p => p.Agent)
                 .ThenInclude(a => a.User)
+            .Include(p => p.Agent)
+                .ThenInclude(a => a.AgentPhotographyCompanies)
+                    .ThenInclude(apc => apc.PhotographyCompany)
             .Select(p => p.Agent)
             .ToListAsync();
     }

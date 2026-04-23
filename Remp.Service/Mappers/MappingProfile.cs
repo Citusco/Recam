@@ -24,6 +24,14 @@ public class MappingProfile : Profile
             .IncludeBase<Agent, UserResponseDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.UserName : null));
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.UserName : null))
+            .ForMember(dest => dest.CompanyNames, opt => opt.MapFrom(
+                        src => src.AgentPhotographyCompanies != null
+                        ? src.AgentPhotographyCompanies
+                        .Select(apc => apc.PhotographyCompany.PhotographyCompanyName)
+                        .ToList()
+                        : new List<string>()
+                        )
+                    );
     }
 }

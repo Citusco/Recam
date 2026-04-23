@@ -18,13 +18,13 @@ namespace Remp.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("getUser")]
-        [Authorize]
-        public async Task<ActionResult<UserResponseDto>> GetUser()
+        [HttpGet("me")]
+        [Authorize(Roles = "Agent")]
+        public async Task<ActionResult<AgentDetailsDto>> GetUser()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-            UserResponseDto userResponseDto = await _userService.GetUserAsync(userId);
-            return Ok(userResponseDto);
+            AgentDetailsDto agentDetailsDto = await _userService.GetUserAsync(userId);
+            return Ok(agentDetailsDto);
         }
     }
 }
