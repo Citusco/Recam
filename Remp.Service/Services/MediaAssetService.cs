@@ -25,7 +25,7 @@ public class MediaAssetService : IMediaAssetService
         _listingCaseRepository = listingCaseRepository;
     }
 
-    public async Task<IEnumerable<CreateMediaAssetResponseDto>> CreateAsync(List<IFormFile> files, MediaType mediaType, int listingCaseId, string userId)
+    public async Task<IEnumerable<MediaAssetResponseDto>> CreateAsync(List<IFormFile> files, MediaType mediaType, int listingCaseId, string userId)
     {
         if (mediaType != MediaType.Picture && files.Count() > 1)
         {
@@ -36,7 +36,7 @@ public class MediaAssetService : IMediaAssetService
             throw new KeyNotFoundException("Listing case not found");
         }
 
-        List<CreateMediaAssetResponseDto> responseDtos = [];
+        List<MediaAssetResponseDto> responseDtos = [];
 
         foreach (var f in files)
         {
@@ -53,7 +53,7 @@ public class MediaAssetService : IMediaAssetService
             };
 
             MediaAsset result = await _mediaAssetRepository.CreateAsync(mediaAsset);
-            responseDtos.Add(_mapper.Map<CreateMediaAssetResponseDto>(result));
+            responseDtos.Add(_mapper.Map<MediaAssetResponseDto>(result));
         }
 
         return responseDtos;

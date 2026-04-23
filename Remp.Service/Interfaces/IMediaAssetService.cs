@@ -6,7 +6,7 @@ namespace Remp.Service.Interfaces;
 
 public interface IMediaAssetService
 {
-    Task<IEnumerable<CreateMediaAssetResponseDto>> CreateAsync (
+    Task<IEnumerable<MediaAssetResponseDto>> CreateAsync (
         List<IFormFile> files,
         MediaType mediaType,
         int listingCaseId,
