@@ -17,11 +17,12 @@ namespace Remp.API.Controllers
             _photographyCompanyService = photographyCompanyService;
         }
 
-        [HttpPost("{id}/agent/{agentId}")]
+        [HttpPost("agents/{agentId}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddAgentToPhotographyCompany([FromRoute] string id, [FromRoute] string agentId)
+        public async Task<ActionResult> AddAgentToPhotographyCompany([FromRoute] string agentId)
         {
-            AgentPhotographyCompanyResponseDto responseDto = await _photographyCompanyService.AssignAgentToCompany(id, agentId);
+            string companyId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            AgentPhotographyCompanyResponseDto responseDto = await _photographyCompanyService.AssignAgentToCompany(companyId, agentId);
 
             return Ok(responseDto);
         }
