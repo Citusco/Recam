@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
 using Remp.DataAccess.Data;
@@ -33,6 +34,18 @@ public class AgentRepository : IAgentRepository
     public async Task<Agent> GetAgentAsync(string id)
     {
         Agent? agent = await _dbContext.Agents.FindAsync(id);
+        if (agent == null)
+        {
+            throw new Exception("Cannot find the agent.");
+        }
+        return agent;
+    }
+
+    public async Task<Agent> GetAgentWithListingsAsync(string id)
+    {
+        Agent? agent = await _dbContext.Agents
+            .Include(a => a.AgentListingCases)
+            .FirstOrDefaultAsync(a => a.Id == id);
         if (agent == null)
         {
             throw new Exception("Cannot find the agent.");

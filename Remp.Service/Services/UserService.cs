@@ -25,7 +25,7 @@ public class UserService : IUserService
         _mapper = mapper;
     }
 
-    public async Task<UserResponseDto> GetUserAsync(string id)
+    public async Task<AgentDetailsDto> GetUserAsync(string id)
     {
         User? user = await _userManager.FindByIdAsync(id);
         if (user == null)
@@ -33,11 +33,15 @@ public class UserService : IUserService
             throw new Exception("Invalid User Id");
         }
 
-        Agent agent = await _agentRepository.GetAgentAsync(id);
-        UserResponseDto userResponseDto = _mapper.Map<UserResponseDto>(agent);
-        userResponseDto.UserName = user.UserName;
-        userResponseDto.Email = user.Email;
-        return userResponseDto;
+        IList<string> roles = await _userManager.GetRolesAsync(user);
+        Agent agent = await _agentRepository.GetAgentWithListingsAsync(id);
+
+        return new AgentDetailsDto
+        {
+            UserId = id,
+            Role = roles.FirstOrDefault() ?? string.Empty,
+            AssignedListingIds = agent.AgentListingCases.Select(alc => alc.ListingCaseId)
+        };
     }
 
 }
