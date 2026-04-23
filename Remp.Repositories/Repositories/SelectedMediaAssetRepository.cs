@@ -14,7 +14,9 @@ public class SelectedMediaAssetRepository : ISelectedMediaAssetRepository
         _dbcontext = dbContext;
     }
 
-    public async Task<IEnumerable<SelectedMedia>> CreateAsync(IEnumerable<SelectedMedia> selectedMedias)
+    public async Task<IEnumerable<SelectedMedia>> CreateAsync(
+        IEnumerable<SelectedMedia> selectedMedias
+    )
     {
         await _dbcontext.AddRangeAsync(selectedMedias);
         await _dbcontext.SaveChangesAsync();
@@ -23,11 +25,23 @@ public class SelectedMediaAssetRepository : ISelectedMediaAssetRepository
 
     public async Task DeleteByListingCaseAsync(int listingCaseId, string agentId)
     {
-        IEnumerable<SelectedMedia> existing = await _dbcontext.SelectedMedias
-        .Where(p => p.ListingCaseId == listingCaseId && p.AgentId == agentId)
-        .ToListAsync();
+        IEnumerable<SelectedMedia> existing = await _dbcontext
+            .SelectedMedias.Where(p => p.ListingCaseId == listingCaseId && p.AgentId == agentId)
+            .ToListAsync();
 
         _dbcontext.SelectedMedias.RemoveRange(existing);
         await _dbcontext.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<MediaAsset>> GetFinalSelectionAsync(
+        int listingCaseId,
+        string agentId
+    )
+    {
+        IEnumerable<MediaAsset> mediaAssets = await _dbcontext
+            .SelectedMedias.Where(sm => sm.ListingCaseId == listingCaseId && sm.AgentId == agentId)
+            .Select(sm => sm.MediaAsset)
+            .ToListAsync();
+        return mediaAssets;
     }
 }

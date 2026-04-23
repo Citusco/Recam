@@ -15,6 +15,7 @@ public class ListingCaseRepository : IListingCaseRepository
     {
         _dbContext = dbContext;
     }
+
     public async Task<ListingCase> CreateAsync(ListingCase listingCase)
     {
         await _dbContext.ListingCases.AddAsync(listingCase);
@@ -37,13 +38,13 @@ public class ListingCaseRepository : IListingCaseRepository
 
         // Admins get all cases created by themselves
         if (role == "Admin")
-            listingCases = await _dbContext.ListingCases
-                .Where(p => p.UserId == userId)
+            listingCases = await _dbContext
+                .ListingCases.Where(p => p.UserId == userId)
                 .ToListAsync();
         else
             // Agents get all cases related to them.
-            listingCases = await _dbContext.AgentListingCases
-                .Where(p => p.AgentId == userId)
+            listingCases = await _dbContext
+                .AgentListingCases.Where(p => p.AgentId == userId)
                 .Include(a => a.ListingCase)
                 .Select(a => a.ListingCase)
                 .ToListAsync();
@@ -57,13 +58,15 @@ public class ListingCaseRepository : IListingCaseRepository
         bool hasAccess = true;
         if (role != "Admin")
         {
-            hasAccess = await _dbContext.AgentListingCases
-                .AnyAsync(p => p.AgentId == userId && p.ListingCaseId == listingcaseId);
+            hasAccess = await _dbContext.AgentListingCases.AnyAsync(p =>
+                p.AgentId == userId && p.ListingCaseId == listingcaseId
+            );
         }
         else
         {
-            hasAccess = await _dbContext.ListingCases
-            .AnyAsync(p => p.UserId == userId && p.Id == listingcaseId);
+            hasAccess = await _dbContext.ListingCases.AnyAsync(p =>
+                p.UserId == userId && p.Id == listingcaseId
+            );
         }
 
         if (!hasAccess)
@@ -72,10 +75,15 @@ public class ListingCaseRepository : IListingCaseRepository
         return await _dbContext.ListingCases.FindAsync(listingcaseId);
     }
 
-    public async Task<ListingCase> UpdateAsync(int listingCaseId, string userId, ListingCase updatedData)
+    public async Task<ListingCase> UpdateAsync(
+        int listingCaseId,
+        string userId,
+        ListingCase updatedData
+    )
     {
-        ListingCase? existingCase = await _dbContext.ListingCases
-            .FirstOrDefaultAsync(p => p.Id == listingCaseId && p.UserId == userId);
+        ListingCase? existingCase = await _dbContext.ListingCases.FirstOrDefaultAsync(p =>
+            p.Id == listingCaseId && p.UserId == userId
+        );
 
         if (existingCase == null)
             throw new KeyNotFoundException("Listing case not found.");
@@ -102,7 +110,9 @@ public class ListingCaseRepository : IListingCaseRepository
 
     public async Task DeleteAsync(int listingCaseId, string userId)
     {
-        ListingCase? listingCase = await _dbContext.ListingCases.FirstOrDefaultAsync(p => p.Id == listingCaseId && p.UserId == userId);
+        ListingCase? listingCase = await _dbContext.ListingCases.FirstOrDefaultAsync(p =>
+            p.Id == listingCaseId && p.UserId == userId
+        );
         if (listingCase == null)
             throw new KeyNotFoundException("Listing case not found");
         if (listingCase.IsDeleted)
@@ -119,12 +129,16 @@ public class ListingCaseRepository : IListingCaseRepository
 
     public async Task<bool> ExistsAsync(int listingCaseId, string userId)
     {
-        return await _dbContext.ListingCases.AnyAsync(p => p.UserId == userId && p.Id == listingCaseId);
+        return await _dbContext.ListingCases.AnyAsync(p =>
+            p.UserId == userId && p.Id == listingCaseId
+        );
     }
 
     public async Task<bool> IsAssignedToAgentAsync(int listingCaseId, string agentId)
     {
-        return await _dbContext.AgentListingCases.AnyAsync(p => p.ListingCaseId == listingCaseId && p.AgentId == agentId);
+        return await _dbContext.AgentListingCases.AnyAsync(p =>
+            p.ListingCaseId == listingCaseId && p.AgentId == agentId
+        );
     }
 
     public async Task AssignAgentToListingAsync(AgentListingCase agentListingCase)
