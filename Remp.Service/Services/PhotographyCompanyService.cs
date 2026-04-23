@@ -48,4 +48,10 @@ public class PhotographyCompanyService : IPhotographyCompanyService
             PageSize = pageSize
         };
     }
+
+    public async Task<IEnumerable<AgentResponseDto>> GetCompanyAgentsAsync(string companyId)
+    {
+        IEnumerable<Agent> agents = await _photographyCompanyRepository.GetCompanyAgentsAsync(companyId);
+        return _mapper.Map<IEnumerable<AgentResponseDto>>(agents);
+    }
 }

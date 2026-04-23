@@ -1,9 +1,8 @@
+using System.Security.Claims;
 using Remp.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Remp.Service.DTOs;
-using Remp.Models.Entities;
-using Remp.Repositories.Repositories;
 
 namespace Remp.API.Controllers
 {
@@ -37,6 +36,15 @@ namespace Remp.API.Controllers
             PagedResponseDto<AgentResponseDto> responseDto = await _photographyCompanyService.GetAllAgentsAsync(page, pageSize);
             return Ok(responseDto);
         }
+
+        [HttpGet("myagents")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<AgentResponseDto>>> GetCompanyAgents()
+        {
+            string companyId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            IEnumerable<AgentResponseDto> responseDtos = await _photographyCompanyService.GetCompanyAgentsAsync(companyId);
+            return Ok(responseDtos);
+        }
     }
-    
+
 }
