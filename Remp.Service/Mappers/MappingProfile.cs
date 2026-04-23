@@ -20,5 +20,10 @@ public class MappingProfile : Profile
         CreateMap<SelectedMedia, SelectMediaResponseDto>();
         CreateMap<AgentListingCase, AgentListingCaseResponseDto>();
         CreateMap<AgentPhotographyCompany, AgentPhotographyCompanyResponseDto>();
+        CreateMap<Agent, AgentResponseDto>()
+            .IncludeBase<Agent, UserResponseDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User != null ? src.User.Email : null))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.UserName : null));
     }
 }

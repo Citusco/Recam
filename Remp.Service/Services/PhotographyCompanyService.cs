@@ -25,13 +25,14 @@ public class PhotographyCompanyService : IPhotographyCompanyService
         bool exists = await _photographyCompanyRepository.ExistsAsync(companyId, agentId);
         if (exists)
             throw new InvalidOperationException("Agent already been assigned to the company.");
-        
+
         AgentPhotographyCompany agentPhotographyCompany = new()
         {
             PhotographyCompanyId = companyId,
-            AgentId = agentId  
+            AgentId = agentId
         };
         await _photographyCompanyRepository.AssignAgentToCompany(agentPhotographyCompany);
+
         AgentPhotographyCompanyResponseDto responseDto = _mapper.Map<AgentPhotographyCompanyResponseDto>(agentPhotographyCompany);
         return responseDto;
     }

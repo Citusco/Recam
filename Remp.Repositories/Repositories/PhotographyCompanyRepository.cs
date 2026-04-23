@@ -31,7 +31,11 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
     public async Task<(IEnumerable<Agent>, int count)> GetAllAgentsAsync(int page, int pageSize)
     {
         int totalCount = await _dbcontext.Agents.CountAsync();
-        IEnumerable<Agent> agents = await _dbcontext.Agents.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        IEnumerable<Agent> agents = await _dbcontext.Agents
+            .Include(a => a.User)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
         return (agents, totalCount);
     }
@@ -41,7 +45,9 @@ public class PhotographyCompanyRepository : IPhotographyCompanyRepository
         return await _dbcontext.AgentPhotographyCompanies
             .Where(p => p.PhotographyCompanyId == companyId)
             .Include(p => p.Agent)
+                .ThenInclude(a => a.User)
             .Select(p => p.Agent)
             .ToListAsync();
     }
+
 }
