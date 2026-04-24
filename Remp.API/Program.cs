@@ -44,6 +44,9 @@ builder.Services.AddScoped<ISelectedMediaAssetService, SelectedMediaAssetService
 builder.Services.AddScoped<IPhotographyCompanyRepository, PhotographyCompanyRepository>();
 builder.Services.AddScoped<IPhotographyCompanyService, PhotographyCompanyService>();
 
+// Singleton
+builder.Services.AddSingleton<ILogService, LogService>();
+
 // Identity
 builder
     .Services.AddIdentity<User, IdentityRole>(options =>
@@ -87,6 +90,7 @@ builder
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
+
 
 // Build app
 var app = builder.Build();

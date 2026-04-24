@@ -3,6 +3,7 @@ using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
 using Remp.Service.DTOs;
 using Remp.Service.Interfaces;
+using Remp.Service.LogModels;
 
 namespace Remp.Service.Services;
 
@@ -12,18 +13,21 @@ public class SelectedMediaAssetService : ISelectedMediaAssetService
     private readonly IMediaAssetRepository _mediaRepository;
     private readonly ISelectedMediaAssetRepository _selectedMediaRepository;
     private readonly IMapper _mapper;
+    private readonly ILogService _logService;
 
     public SelectedMediaAssetService(
         IListingCaseRepository listingCaseRepository,
         IMediaAssetRepository mediaAssetRepository,
         ISelectedMediaAssetRepository selectedMediaRepository,
-        IMapper mapper
+        IMapper mapper,
+        ILogService logService
     )
     {
         _listingCaseRepository = listingCaseRepository;
         _mediaRepository = mediaAssetRepository;
         _selectedMediaRepository = selectedMediaRepository;
         _mapper = mapper;
+        _logService = logService;
     }
 
     public async Task<IEnumerable<SelectMediaResponseDto>> CreateAsync(
@@ -72,6 +76,16 @@ public class SelectedMediaAssetService : ISelectedMediaAssetService
         IEnumerable<SelectMediaResponseDto> responseDtos = _mapper.Map<
             IEnumerable<SelectMediaResponseDto>
         >(resultMedias);
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "SelectedMedia",
+                OperatorId = agentId,
+                ListingCaseId = listingCaseId,
+                Detail = $"Selected {responseDtos.Count()} medias",
+            }
+        );
 
         return responseDtos;
     }

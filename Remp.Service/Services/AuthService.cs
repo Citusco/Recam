@@ -9,6 +9,7 @@ using Remp.Models.Entities;
 using Remp.Repositories.Interfaces;
 using Remp.Service.DTOs;
 using Remp.Service.Interfaces;
+using Remp.Service.LogModels;
 
 namespace Remp.Service.Services;
 
@@ -20,6 +21,7 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly IAgentRepository _agentRepository;
     private readonly IPhotographyCompanyRepository _photographyCompanyRepository;
+    private readonly ILogService _logService;
 
     public AuthService(
         UserManager<User> userManager,
@@ -27,7 +29,8 @@ public class AuthService : IAuthService
         IMapper mapper,
         IConfiguration configuration,
         IAgentRepository agentRepository,
-        IPhotographyCompanyRepository photographyCompanyRepository
+        IPhotographyCompanyRepository photographyCompanyRepository,
+        ILogService logService
     )
     {
         _userManager = userManager;
@@ -36,6 +39,7 @@ public class AuthService : IAuthService
         _configuration = configuration;
         _agentRepository = agentRepository;
         _photographyCompanyRepository = photographyCompanyRepository;
+        _logService = logService;
     }
 
     // Register service.
@@ -67,6 +71,16 @@ public class AuthService : IAuthService
         agent.Id = user.Id;
         await _agentRepository.AddAgentToDbAsync(agent);
 
+        await _logService.LogAuthAsync(
+            new AuthLog
+            {
+                Event = "Register",
+                UserId = user.Id,
+                Email = user.Email!,
+                Role = "Agent",
+            }
+        );
+
         return GenerateToken(user, "Agent");
     }
 
@@ -95,6 +109,16 @@ public class AuthService : IAuthService
         };
         await _photographyCompanyRepository.AddCompanyAsync(company);
 
+        await _logService.LogAuthAsync(
+            new AuthLog
+            {
+                Event = "Register",
+                UserId = user.Id,
+                Email = user.Email!,
+                Role = "Admin",
+            }
+        );
+
         return GenerateToken(user, "Admin");
     }
 
@@ -104,19 +128,45 @@ public class AuthService : IAuthService
         User? user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
-            throw new Exception("Invalid email or password.");
+            await _logService.LogAuthAsync(
+                new AuthLog
+                {
+                    Event = "LoginFailed",
+                    Email = request.Email,
+                    FailureReason = "User not found.",
+                }
+            );
+            throw new InvalidOperationException("Invalid email or password.");
         }
 
         // Verify password
         var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordValid)
         {
-            throw new Exception("Invalid email or password.");
+            await _logService.LogAuthAsync(
+                new AuthLog
+                {
+                    Event = "LoginFailed",
+                    Email = request.Email,
+                    FailureReason = "Invalid password.",
+                }
+            );
+            throw new InvalidOperationException("Invalid email or password.");
         }
 
         // Get user's role
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? "Agent";
+
+        await _logService.LogAuthAsync(
+            new AuthLog
+            {
+                Event = "Login",
+                UserId = user.Id,
+                Email = user.Email!,
+                Role = role,
+            }
+        );
 
         return GenerateToken(user, role);
     }

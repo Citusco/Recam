@@ -7,6 +7,7 @@ using Remp.Models.Enums;
 using Remp.Repositories.Interfaces;
 using Remp.Service.DTOs;
 using Remp.Service.Interfaces;
+using Remp.Service.LogModels;
 
 namespace Remp.Service.Services;
 
@@ -16,16 +17,29 @@ public class MediaAssetService : IMediaAssetService
     private readonly IMapper _mapper;
     private readonly IBlobUploadService _blobService;
     private readonly IListingCaseRepository _listingCaseRepository;
+    private readonly ILogService _logService;
 
-    public MediaAssetService (IMediaAssetRepository repository, IMapper mapper, IBlobUploadService blobUploadService, IListingCaseRepository listingCaseRepository)
+    public MediaAssetService(
+        IMediaAssetRepository repository,
+        IMapper mapper,
+        IBlobUploadService blobUploadService,
+        IListingCaseRepository listingCaseRepository,
+        ILogService logService
+    )
     {
         _mediaAssetRepository = repository;
         _mapper = mapper;
         _blobService = blobUploadService;
         _listingCaseRepository = listingCaseRepository;
+        _logService = logService;
     }
 
-    public async Task<IEnumerable<MediaAssetResponseDto>> CreateAsync(List<IFormFile> files, MediaType mediaType, int listingCaseId, string userId)
+    public async Task<IEnumerable<MediaAssetResponseDto>> CreateAsync(
+        List<IFormFile> files,
+        MediaType mediaType,
+        int listingCaseId,
+        string userId
+    )
     {
         if (mediaType != MediaType.Picture && files.Count() > 1)
         {
@@ -49,17 +63,31 @@ public class MediaAssetService : IMediaAssetService
                 UserId = userId,
                 IsSelect = false,
                 IsHero = false,
-                IsDeleted = false
+                IsDeleted = false,
             };
 
             MediaAsset result = await _mediaAssetRepository.CreateAsync(mediaAsset);
             responseDtos.Add(_mapper.Map<MediaAssetResponseDto>(result));
         }
 
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "MediaCreated",
+                OperatorId = userId,
+                ListingCaseId = listingCaseId,
+                Detail = $"Created {responseDtos.Count} {mediaType}",
+            }
+        );
+
         return responseDtos;
     }
 
-    public async Task<IEnumerable<MediaAssetResponseDto>> GetAsync(int listingCaseId, string userId, string role)
+    public async Task<IEnumerable<MediaAssetResponseDto>> GetAsync(
+        int listingCaseId,
+        string userId,
+        string role
+    )
     {
         // Check existence and accessibility.
         bool hasAccess;
@@ -71,13 +99,17 @@ public class MediaAssetService : IMediaAssetService
         {
             hasAccess = await _listingCaseRepository.IsAssignedToAgentAsync(listingCaseId, userId);
         }
-        if (! hasAccess)
+        if (!hasAccess)
         {
             throw new UnauthorizedAccessException("Cannot access listingcase.");
         }
 
-        IEnumerable<MediaAsset> mediaAssets = await _mediaAssetRepository.GetAssetsAsync(listingCaseId);
-        IEnumerable<MediaAssetResponseDto> responseDtos = _mapper.Map<IEnumerable<MediaAssetResponseDto>>(mediaAssets);
+        IEnumerable<MediaAsset> mediaAssets = await _mediaAssetRepository.GetAssetsAsync(
+            listingCaseId
+        );
+        IEnumerable<MediaAssetResponseDto> responseDtos = _mapper.Map<
+            IEnumerable<MediaAssetResponseDto>
+        >(mediaAssets);
 
         return responseDtos;
     }
@@ -91,5 +123,15 @@ public class MediaAssetService : IMediaAssetService
         }
         await _blobService.DeleteAsync(mediaAsset.MediaUrl);
         await _mediaAssetRepository.DeleteAsync(mediaId);
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "Delete",
+                OperatorId = userId,
+                ListingCaseId = mediaAsset.ListingCaseId,
+                Detail = $"Media id: {mediaId}, media type: {mediaAsset.MediaType}",
+            }
+        );
     }
 }
