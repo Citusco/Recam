@@ -1,14 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Remp.Models.Entities;
+using Remp.Repositories.Interfaces;
 using Remp.Service.DTOs;
 using Remp.Service.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Remp.Repositories.Interfaces;
 
 namespace Remp.Service.Services;
 
@@ -49,7 +49,9 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw new InvalidOperationException(
+                string.Join(", ", result.Errors.Select(e => e.Description))
+            );
         }
 
         // Assign role or create new role
@@ -89,7 +91,7 @@ public class AuthService : IAuthService
         {
             Id = user.Id,
             User = user,
-            PhotographyCompanyName = request.PhotographyCompanyName
+            PhotographyCompanyName = request.PhotographyCompanyName,
         };
         await _photographyCompanyRepository.AddCompanyAsync(company);
 
@@ -104,7 +106,7 @@ public class AuthService : IAuthService
         {
             throw new Exception("Invalid email or password.");
         }
-        
+
         // Verify password
         var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordValid)
@@ -128,13 +130,15 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, role)
+            new Claim(ClaimTypes.Role, role),
         };
 
         // Jwt secure key.
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationMinutes"]));
+        var expiration = DateTime.Now.AddMinutes(
+            Convert.ToDouble(_configuration["Jwt:ExpirationMinutes"])
+        );
 
         // Jwt token.
         var token = new JwtSecurityToken(
@@ -149,7 +153,7 @@ public class AuthService : IAuthService
         {
             Token = new JwtSecurityTokenHandler().WriteToken(token),
             Expiration = expiration,
-            Role = role
+            Role = role,
         };
     }
 }
