@@ -1,4 +1,6 @@
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ using Remp.Repositories.Repositories;
 using Remp.Service.Interfaces;
 using Remp.Service.Mappers;
 using Remp.Service.Services;
+using Remp.Service.Validators;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +45,16 @@ builder.Services.AddScoped<IPhotographyCompanyRepository, PhotographyCompanyRepo
 builder.Services.AddScoped<IPhotographyCompanyService, PhotographyCompanyService>();
 
 // Identity
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<RempDbContext>();
+builder
+    .Services.AddIdentity<User, IdentityRole>(options =>
+    {
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddEntityFrameworkStores<RempDbContext>();
 
 // Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -73,6 +85,8 @@ builder
 
 // Controllers
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 
 // Build app
 var app = builder.Build();
