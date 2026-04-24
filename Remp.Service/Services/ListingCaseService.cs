@@ -4,6 +4,7 @@ using Remp.Models.Enums;
 using Remp.Repositories.Interfaces;
 using Remp.Service.DTOs;
 using Remp.Service.Interfaces;
+using Remp.Service.LogModels;
 
 namespace Remp.Service.Services;
 
@@ -11,11 +12,17 @@ public class ListingCaseService : IListingCaseService
 {
     private readonly IListingCaseRepository _listingCaseRepository;
     private readonly IMapper _mapper;
+    private readonly ILogService _logService;
 
-    public ListingCaseService(IListingCaseRepository listingCaseRepository, IMapper mapper)
+    public ListingCaseService(
+        IListingCaseRepository listingCaseRepository,
+        IMapper mapper,
+        ILogService logService
+    )
     {
         _listingCaseRepository = listingCaseRepository;
         _mapper = mapper;
+        _logService = logService;
     }
 
     public async Task<ListingCaseResponseDto> CreateListingCaseAsync(
@@ -33,6 +40,17 @@ public class ListingCaseService : IListingCaseService
         // Add to Db
         ListingCase result = await _listingCaseRepository.CreateAsync(listingCase);
         ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(result);
+
+        // Log to mongoDb
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "Create",
+                OperatorId = userId,
+                ListingCaseId = result.Id,
+            }
+        );
+
         return responseDto;
     }
 
@@ -64,6 +82,16 @@ public class ListingCaseService : IListingCaseService
             userId,
             updatedData
         );
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "Update",
+                OperatorId = userId,
+                ListingCaseId = listingCaseId,
+            }
+        );
+
         return _mapper.Map<ListingCaseDetailResponseDto>(result);
     }
 
@@ -92,6 +120,15 @@ public class ListingCaseService : IListingCaseService
     public async Task DeleteAsync(int listingCaseId, string userId)
     {
         await _listingCaseRepository.DeleteAsync(listingCaseId, userId);
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "Delete",
+                OperatorId = userId,
+                ListingCaseId = listingCaseId,
+            }
+        );
     }
 
     public async Task<ListingCaseResponseDto> UpdateListingStatus(
@@ -110,10 +147,22 @@ public class ListingCaseService : IListingCaseService
             throw new KeyNotFoundException("Listing case not found.");
 
         // Status can only move forward, reverting is not allowed.
-        if (listingCase.ListCaseStatus == ListCaseStatus.Delivered)
+        ListCaseStatus oldStatus = listingCase.ListCaseStatus;
+        if (oldStatus == ListCaseStatus.Delivered)
             throw new InvalidOperationException("Cannot change delivered status");
         await _listingCaseRepository.UpdateStatus(listingCase);
         ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(listingCase);
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "UpdateStatus",
+                OperatorId = userId,
+                ListingCaseId = listingCaseId,
+                Detail = $"{oldStatus} -> {listingCase.ListCaseStatus}",
+            }
+        );
+
         return responseDto;
     }
 
@@ -130,6 +179,16 @@ public class ListingCaseService : IListingCaseService
 
         await _listingCaseRepository.AssignAgentToListingAsync(agentListingCase);
         var responseDto = _mapper.Map<AgentListingCaseResponseDto>(agentListingCase);
+
+        await _logService.LogCaseHistoryAsync(
+            new CaseHistoryLog
+            {
+                Event = "Assign",
+                OperatorId = agentId,
+                ListingCaseId = listingCaseId,
+            }
+        );
+
         return responseDto;
     }
 }
