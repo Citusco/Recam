@@ -6,13 +6,17 @@ namespace Remp.Service.Interfaces;
 
 public interface IMediaAssetService
 {
-    Task<IEnumerable<MediaAssetResponseDto>> CreateAsync (
+    Task<IEnumerable<MediaAssetResponseDto>> CreateAsync(
         List<IFormFile> files,
         MediaType mediaType,
         int listingCaseId,
-        string userId  
+        string userId
     );
 
-    Task<IEnumerable<MediaAssetResponseDto>> GetAsync(int listingCaseId, string userId, string role);
+    Task<IEnumerable<MediaAssetResponseDto>> GetAsync(
+        int listingCaseId,
+        string userId,
+        string role
+    );
     Task DeleteAsync(string userId, int mediaId);
 }
