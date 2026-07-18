@@ -6,6 +6,16 @@
 # dotenv files
 .env
 
+# AI assistant files
+.claude/
+.codex/
+CLAUDE.md
+Claude.md
+claude.md
+AGENTS.md
+Agents.md
+agents.md
+
 # User-specific files
 *.rsuser
 *.suo
